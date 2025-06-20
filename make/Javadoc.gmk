@@ -457,7 +457,7 @@ $(DOCLETAPI_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-breakiterator) ; \
 	  $(call OptionPair,-doctitle,$(DOCLETAPI_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(DOCLETAPI_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -513,7 +513,7 @@ $(TAGLETAPI_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nonavbar) ; \
 	  $(call OptionOnly,-noindex) ; \
 	  $(call OptionPair,-bottom,$(TAGLETAPI_BOTTOM)$(DRAFT_BOTTOM)) ; \
@@ -564,7 +564,7 @@ $(DOMAPI_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-splitIndex) ; \
 	  $(call OptionPair,-doctitle,$(DOMAPI_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(DOMAPI_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -626,7 +626,7 @@ $(JDI_OPTIONS_FILE): $(JDI_OVERVIEW)
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionPair,-overview,$(JDI_OVERVIEW)) ; \
 	  $(call OptionPair,-doctitle,$(JDI_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(JDI_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -713,7 +713,7 @@ $(JAAS_OPTIONS_FILE): $(JAAS_OVERVIEW)
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionPair,-overview,$(JAAS_OVERVIEW)) ; \
 	  $(call OptionPair,-doctitle,$(JAAS_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(JAAS_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -765,7 +765,7 @@ $(JGSS_OPTIONS_FILE): $(JGSS_OVERVIEW)
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-overview,$(JGSS_OVERVIEW)) ; \
 	  $(call OptionPair,-doctitle,$(JGSS_DOCTITLE)) ; \
@@ -817,7 +817,7 @@ $(SMARTCARDIO_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-doctitle,$(SMARTCARDIO_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(SMARTCARDIO_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -867,7 +867,7 @@ $(HTTPSERVER_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-doctitle,$(HTTPSERVER_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(HTTPSERVER_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -927,7 +927,7 @@ $(MGMT_OPTIONS_FILE): $(MGMT_OVERVIEW)
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-overview,$(MGMT_OVERVIEW)) ; \
 	  $(call OptionPair,-doctitle,$(MGMT_DOCTITLE)) ; \
@@ -978,7 +978,7 @@ $(ATTACH_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-doctitle,$(ATTACH_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(ATTACH_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -1028,7 +1028,7 @@ $(JCONSOLE_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-doctitle,$(JCONSOLE_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(JCONSOLE_WINDOWTITLE) $(DRAFT_WINTITLE)); \
@@ -1080,7 +1080,7 @@ $(TREEAPI_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionPair,-doctitle,$(TREEAPI_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(TREEAPI_WINDOWTITLE) $(DRAFT_WINTITLE)); \
 	  $(call OptionPair,-header,$(TREEAPI_HEADER)$(DRAFT_HEADER)) ; \
@@ -1131,7 +1131,7 @@ $(SCTPAPI_OPTIONS_FILE):
 	$(prep-target)
 	@($(call OptionOnly,$(COMMON_JAVADOCFLAGS)) ; \
 	  $(call OptionPair,-sourcepath,$(RELEASEDOCS_SOURCEPATH)) ; \
-	  $(call OptionPair,-encoding,ascii) ; \
+	  $(call OptionPair,-encoding,utf8) ; \
 	  $(call OptionOnly,-nodeprecatedlist) ; \
 	  $(call OptionPair,-doctitle,$(SCTPAPI_DOCTITLE)) ; \
 	  $(call OptionPair,-windowtitle,$(SCTPAPI_WINDOWTITLE) $(DRAFT_WINTITLE)); \
