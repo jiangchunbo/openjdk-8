@@ -391,9 +391,12 @@ public class ReentrantReadWriteLock
              */
             Thread current = Thread.currentThread();
             int c = getState();
+            // 从 state 中解析出 write count
             int w = exclusiveCount(c);
+            
             if (c != 0) {
                 // (Note: if c != 0 and w == 0 then shared count != 0)
+                // w == 0 ---> 没有人持有写锁，那么自己可以获得锁？
                 if (w == 0 || current != getExclusiveOwnerThread())
                     return false;
                 if (w + exclusiveCount(acquires) > MAX_COUNT)
