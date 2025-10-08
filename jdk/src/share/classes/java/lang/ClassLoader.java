@@ -1084,11 +1084,15 @@ public abstract class ClassLoader {
      */
     public URL getResource(String name) {
         URL url;
+
+        // 双亲委派
         if (parent != null) {
             url = parent.getResource(name);
         } else {
             url = getBootstrapResource(name);
         }
+
+        // 找不到就自己寻找
         if (url == null) {
             url = findResource(name);
         }

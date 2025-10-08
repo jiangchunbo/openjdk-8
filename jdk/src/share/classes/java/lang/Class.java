@@ -2227,6 +2227,8 @@ public final class Class<T> implements java.io.Serializable,
             // A system class.
             return ClassLoader.getSystemResource(name);
         }
+
+        // 委托给 ClassLoader 加载资源
         return cl.getResource(name);
     }
 
