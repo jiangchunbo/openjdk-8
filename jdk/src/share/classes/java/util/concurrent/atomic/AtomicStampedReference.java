@@ -49,6 +49,10 @@ package java.util.concurrent.atomic;
  */
 public class AtomicStampedReference<V> {
 
+    /**
+     * 这个对象是一个 final 不变对象，所以如果要获得一个新的组合，就必须 new
+     * @param <T>
+     */
     private static class Pair<T> {
         final T reference;
         final int stamp;
@@ -61,6 +65,9 @@ public class AtomicStampedReference<V> {
         }
     }
 
+    /**
+     * 该类内部封装的 pair 对象
+     */
     private volatile Pair<V> pair;
 
     /**
@@ -147,6 +154,10 @@ public class AtomicStampedReference<V> {
                                  int expectedStamp,
                                  int newStamp) {
         Pair<V> current = pair;
+        // 前 2 个判断就是比较当前是否与 exptected 相等
+        // 接下来的判断是一个或(||)
+        // 或 1：是否 new 引用 new stamp 已经是 current 了，有可能不需要改变，也有可能已经被人改变
+        // 或 2：cas (当前对象，新对象)
         return
             expectedReference == current.reference &&
             expectedStamp == current.stamp &&

@@ -186,8 +186,11 @@ public class Semaphore implements java.io.Serializable {
 
         protected final boolean tryReleaseShared(int releases) {
             for (;;) {
+                // 获得当前 state
                 int current = getState();
+                // 计算释放之后 next
                 int next = current + releases;
+                // 别溢出，或者 releases 竟然是负数?
                 if (next < current) // overflow
                     throw new Error("Maximum permit count exceeded");
                 if (compareAndSetState(current, next))

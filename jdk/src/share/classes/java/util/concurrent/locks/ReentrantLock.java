@@ -128,6 +128,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         /**
          * Performs non-fair tryLock.  tryAcquire is implemented in
          * subclasses, but both need nonfair try for trylock method.
+         * <p>
+         * try 之类的方法都是改 state，此处也修改了 exclusiveOwnerThread
          */
         final boolean nonfairTryAcquire(int acquires) {
             // 获取当前线程
@@ -147,6 +149,9 @@ public class ReentrantLock implements Lock, java.io.Serializable {
             // state > 0 说明此时被人获取了锁
             // 如果获取获取锁的线程就是自己，那么将 state 递增
             else if (current == getExclusiveOwnerThread()) {
+
+                // 当进入 current == getExclusiveOwnerThread() 逻辑，下面的逻辑一定没有并发
+
                 int nextc = c + acquires;
 
                 // 这里判断 nextc 不能小于 0，担心的是溢出
@@ -161,6 +166,11 @@ public class ReentrantLock implements Lock, java.io.Serializable {
             return false;
         }
 
+        /**
+         * 释放锁对于公平、非公平都是通用的
+         *
+         * @return 返回值并不是指是否多线程竞争到什么东西，而是是否彻底释放锁，因为可能只是减少重入次数
+         */
         protected final boolean tryRelease(int releases) {
             int c = getState() - releases;
 
@@ -177,6 +187,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
                 free = true;
                 setExclusiveOwnerThread(null); //
             }
+
+            // 注意这一点，共享变量一定要在所有工作完毕之后暴露出去
             setState(c);
             return free;
         }
@@ -226,10 +238,13 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         /**
          * Performs lock.  Try immediate barge, backing up to normal
          * acquire on failure.
-         *
+         * <p>
          * 执行加锁。尝试立即进入临界区，当失败时回退到正常 acquire
          */
         final void lock() {
+            // 非公平锁，先来一次 CAS
+            // 失败就走 acquire
+
             if (compareAndSetState(0, 1))
                 setExclusiveOwnerThread(Thread.currentThread());
             else
@@ -257,6 +272,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         /**
          * Fair version of tryAcquire.  Don't grant access unless
          * recursive call or no waiters or is first.
+         *
+         * tryAcquire 的公平版本。
          */
         protected final boolean tryAcquire(int acquires) {
             // 类似地，先获取好 Thread 和 state
@@ -265,12 +282,17 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 
             // 如果没有其他线程持有锁
             if (c == 0) {
+                // !hasQueuedPredecessors() : 是否需要排队
+                // 没有前驱才能 CAS
+                // 没有前驱就是说排在队列第一个
                 if (!hasQueuedPredecessors() &&
                         compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
-            } else if (current == getExclusiveOwnerThread()) {
+            }
+            // 重入
+            else if (current == getExclusiveOwnerThread()) {
                 int nextc = c + acquires;
                 if (nextc < 0)
                     throw new Error("Maximum lock count exceeded");
@@ -394,8 +416,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      * thread; and {@code false} otherwise
      */
     public boolean tryLock() {
-        // 委托给 sync 去获取许可
-        // sync 可以是公平的，也可以是非公平
+        // 这意味着不管公平锁，还是非公平锁，tryLock 都是非公平
         return sync.nonfairTryAcquire(1);
     }
 

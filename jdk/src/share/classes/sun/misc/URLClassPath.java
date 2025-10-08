@@ -309,7 +309,7 @@ public class URLClassPath {
         }
          // Expand URL search path until the request can be satisfied
          // or the URL stack is empty.
-        while (loaders.size() < index + 1) {
+        while (loaders.size() < index + 1) { // 这个意思就是说，如果需要加载的索引太大了，才会去继续加载
             // Pop the next URL from the URL stack
             URL url;
             synchronized (urls) {
@@ -356,6 +356,8 @@ public class URLClassPath {
                 new java.security.PrivilegedExceptionAction<Loader>() {
                 public Loader run() throws IOException {
                     String file = url.getFile();
+
+                    // Loader 大体上分为 Jar 加载器和 文件夹加载器
                     if (file != null && file.endsWith("/")) {
                         if ("file".equals(url.getProtocol())) {
                             return new FileLoader(url);
@@ -523,6 +525,7 @@ public class URLClassPath {
         }
 
         Resource getResource(final String name, boolean check) {
+            // 构造 URL
             final URL url;
             try {
                 url = new URL(base, ParseUtil.encodePath(name, false));
@@ -536,6 +539,8 @@ public class URLClassPath {
                 }
                 uc = url.openConnection();
                 InputStream in = uc.getInputStream();
+
+                // 检查是否是 JAR
                 if (uc instanceof JarURLConnection) {
                     /* Need to remember the jar file so it can be closed
                      * in a hurry.
