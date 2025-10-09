@@ -34,14 +34,17 @@ import java.security.CodeSigner;
 import java.util.jar.Manifest;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
 import sun.nio.ByteBuffered;
 
 /**
  * This class is used to represent a Resource that has been loaded
  * from the class path.
+ * <p>
+ * 此类被用于表示一个从 class path 加载的资源
  *
- * @author  David Connelly
- * @since   1.2
+ * @author David Connelly
+ * @since 1.2
  */
 public abstract class Resource {
     /**
@@ -95,7 +98,7 @@ public abstract class Resource {
 
         boolean isInterrupted = Thread.interrupted();
         int len;
-        for (;;) {
+        for (; ; ) {
             try {
                 len = getContentLength();
                 break;
@@ -143,7 +146,8 @@ public abstract class Resource {
                 in.close();
             } catch (InterruptedIOException iioe) {
                 isInterrupted = true;
-            } catch (IOException ignore) {}
+            } catch (IOException ignore) {
+            }
 
             if (isInterrupted) {
                 Thread.currentThread().interrupt();
@@ -159,7 +163,7 @@ public abstract class Resource {
     public ByteBuffer getByteBuffer() throws IOException {
         InputStream in = cachedInputStream();
         if (in instanceof ByteBuffered) {
-            return ((ByteBuffered)in).getByteBuffer();
+            return ((ByteBuffered) in).getByteBuffer();
         }
         return null;
     }

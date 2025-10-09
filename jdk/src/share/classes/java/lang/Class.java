@@ -2357,7 +2357,9 @@ public final class Class<T> implements java.io.Serializable,
             while (c.isArray()) {
                 c = c.getComponentType();
             }
-            String baseName = c.getName();
+            String baseName = c.getName(); // com.jiangchunbo.Jcb
+
+            // com/jiangchunbo/ <name>
             int index = baseName.lastIndexOf('.');
             if (index != -1) {
                 name = baseName.substring(0, index).replace('.', '/')

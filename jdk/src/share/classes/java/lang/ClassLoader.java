@@ -1089,6 +1089,7 @@ public abstract class ClassLoader {
         if (parent != null) {
             url = parent.getResource(name);
         } else {
+            // 没有 parent 就意味着是 bootstrap，通过单独的方法调用
             url = getBootstrapResource(name);
         }
 
@@ -1261,7 +1262,9 @@ public abstract class ClassLoader {
      * Find resources from the VM's built-in classloader.
      */
     private static URL getBootstrapResource(String name) {
+        // 通过静态方法获取 bootstrap 的 URLClassPath
         URLClassPath ucp = getBootstrapClassPath();
+        // 将 name 委托给 URLClassPath 去寻找
         Resource res = ucp.getResource(name);
         return res != null ? res.getURL() : null;
     }
