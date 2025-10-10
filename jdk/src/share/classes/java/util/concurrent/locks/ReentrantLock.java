@@ -336,6 +336,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      * at which time the lock hold count is set to one.
      */
     public void lock() {
+        // sync 如果是公平锁，调用 acquire 1
+        // sync 如果是非公平锁，调用 CAS 失败之后再回退到 acquire 1
         sync.lock();
     }
 
