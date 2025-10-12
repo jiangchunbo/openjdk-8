@@ -68,9 +68,16 @@ import sun.security.util.SecurityConstants;
  * typical strategy is to transform the name into a file name and then read a
  * "class file" of that name from a file system.
  *
+ * ClassLoader 是一个负责加载类的对象，而该类是一个抽象类。
+ *
+ * 给定一个 binary name 后，类加载器应尝试定位或生成定义该类的数据。
+ * 一个典型的策略是将类奴婢该转换为文件名，然后从文件系统中读取与其名称对应的 class file
+ *
  * <p> Every {@link Class <tt>Class</tt>} object contains a {@link
  * Class#getClassLoader() reference} to the <tt>ClassLoader</tt> that defined
  * it.
+ *
+ * 每个 Class 对象都包含对定义它的 ClassLoader 的引用，通过 getClassLoader 方法获取
  *
  * <p> <tt>Class</tt> objects for array classes are not created by class
  * loaders, but are created automatically as required by the Java runtime.
@@ -79,9 +86,14 @@ import sun.security.util.SecurityConstants;
  * type; if the element type is a primitive type, then the array class has no
  * class loader.
  *
+ * 数组类的 Class 对象不会由类加载器创建，而是由 Java 运行时在需要时自动创建。数组类的类加载器与其元素类型的类加载器相同。
+ * 如果数组的元素类型是基本类型（如 int、float），则数组类没有类加载器。
+ *
  * <p> Applications implement subclasses of <tt>ClassLoader</tt> in order to
  * extend the manner in which the Java virtual machine dynamically loads
  * classes.
+ *
+ * 应用程序可以通过实现 ClassLoader 的子类以扩展 Java 虚拟机动态加载类的方式
  *
  * <p> Class loaders may typically be used by security managers to indicate
  * security domains.
@@ -108,6 +120,10 @@ import sun.security.util.SecurityConstants;
  * loading can lead to deadlocks because the loader lock is held for the
  * duration of the class loading process (see {@link #loadClass
  * <tt>loadClass</tt>} methods).
+ *
+ * 并行加载能力
+ *
+ * 支持并行加载类的类加载器称为“并行能力类加载器”
  *
  * <p> Normally, the Java virtual machine loads classes from the local file
  * system in a platform-dependent manner.  For example, on UNIX systems, the
