@@ -287,6 +287,8 @@ public class Launcher {
 
         /*
          * Creates a new AppClassLoader
+         *
+         * 唯一一个构造函数，接受一组 URL 以及一个 parent 累加载器
          */
         AppClassLoader(URL[] urls, ClassLoader parent) {
             super(urls, parent, factory);

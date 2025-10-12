@@ -345,6 +345,10 @@ public abstract class ClassLoader {
      * to invoking {@link #loadClass(String, boolean) <tt>loadClass(name,
      * false)</tt>}.
      *
+     * 加载 class，使用 binary name 也就是完全限定名。
+     *
+     * 这种机制会由 JVM 调用来解析类引用
+     *
      * @param  name
      *         The <a href="#name">binary name</a> of the class
      *
@@ -401,10 +405,15 @@ public abstract class ClassLoader {
     protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
     {
+        // 这个锁可能粒度大，或者粒度小，看并行情况
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
+            // 首先，检查这个类是否已经被加载过了
+            // 而且，我们可以知道，只需要通过一个 ClassLoader + name 就能判断该类是否加载过
             Class<?> c = findLoadedClass(name);
             if (c == null) {
+                // 下面进行加载
+
                 long t0 = System.nanoTime();
                 try {
                     if (parent != null) {
@@ -417,6 +426,7 @@ public abstract class ClassLoader {
                     // from the non-null parent class loader
                 }
 
+                // 如果双亲委派没有找到，则自己寻找
                 if (c == null) {
                     // If still not found, then invoke findClass in order
                     // to find the class.
@@ -457,9 +467,14 @@ public abstract class ClassLoader {
      * @since  1.7
      */
     protected Object getClassLoadingLock(String className) {
+        // 如果锁的粒度很粗，className 其实是没有用的
+
+        // 这个要看 ClassLoader 是否要并行加载
         Object lock = this;
         if (parallelLockMap != null) {
             Object newLock = new Object();
+
+            // 如果返回值是 null，表示 put 成功，竞争成功，此时赋予自己的 newLock
             lock = parallelLockMap.putIfAbsent(className, newLock);
             if (lock == null) {
                 lock = newLock;
@@ -863,8 +878,12 @@ public abstract class ClassLoader {
 
     // true if the name is null or has the potential to be a valid binary name
     private boolean checkName(String name) {
+        // name 是空，或者是空字符串，竟然也是一个合格的名字
         if ((name == null) || (name.length() == 0))
             return true;
+
+        // 不允许出现 '/'
+        // 不允许出现 '['  （如果虚拟机不允许）
         if ((name.indexOf('/') != -1)
             || (!VM.allowArraySyntax() && (name.charAt(0) == '[')))
             return false;
@@ -1030,8 +1049,11 @@ public abstract class ClassLoader {
      * @since  1.1
      */
     protected final Class<?> findLoadedClass(String name) {
+        // 如果 check 名字不成功，就返回 null
         if (!checkName(name))
             return null;
+
+        // 通过 native 方法寻找
         return findLoadedClass0(name);
     }
 
@@ -1452,6 +1474,7 @@ public abstract class ClassLoader {
             sun.misc.Launcher l = sun.misc.Launcher.getLauncher();
             if (l != null) {
                 Throwable oops = null;
+                //
                 scl = l.getClassLoader();
                 try {
                     scl = AccessController.doPrivileged(
@@ -1532,6 +1555,7 @@ public abstract class ClassLoader {
 
     // Set to true once the system class loader has been set
     // @GuardedBy("ClassLoader.class")
+    // sclSet 的缩写是 system class loader set，表示系统类加载器是否设置
     private static boolean sclSet;
 
 
@@ -2196,6 +2220,7 @@ class SystemClassLoaderAction
     }
 
     public ClassLoader run() throws Exception {
+        // 如果 java.system.class.loader 属性是 null，就使用传入进来的 class laoder
         String cls = System.getProperty("java.system.class.loader");
         if (cls == null) {
             return parent;

@@ -356,10 +356,13 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
     protected Class<?> findClass(final String name)
          throws ClassNotFoundException
     {
+        // ExtClassLoader AppClassLoader 在双亲委托失败之后，就会执行这个方法
         try {
             return AccessController.doPrivileged(
                 new PrivilegedExceptionAction<Class<?>>() {
                     public Class<?> run() throws ClassNotFoundException {
+
+                        // 将 name 转换为路径格式，因此其中的 . 需要替换成 /  并且后面增加 .class
                         String path = name.replace('.', '/').concat(".class");
                         Resource res = ucp.getResource(path, false);
                         if (res != null) {
@@ -371,6 +374,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
                         } else {
                             throw new ClassNotFoundException(name);
                         }
+
                     }
                 }, acc);
         } catch (java.security.PrivilegedActionException pae) {
