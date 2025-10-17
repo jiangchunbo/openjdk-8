@@ -61,6 +61,9 @@ import sun.misc.SharedSecrets;
  */
 public
 class JarFile extends ZipFile {
+
+    // JarFile 在创建的时候就会对文件立即进行解析
+
     private SoftReference<Manifest> manRef;
     private JarEntry manEntry;
     private JarVerifier jv;
@@ -113,6 +116,9 @@ class JarFile extends ZipFile {
      * Creates a new <code>JarFile</code> to read from the specified
      * <code>File</code> object. The <code>JarFile</code> will be verified if
      * it is signed.
+     *
+     * 从指定的 File 中读取，创建一个 JarFile
+     *
      * @param file the jar file to be opened for reading
      * @throws IOException if an I/O error has occurred
      * @throws SecurityException if access to the file is denied

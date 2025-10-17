@@ -102,8 +102,8 @@ class ByteArrayInputStream extends InputStream {
      */
     public ByteArrayInputStream(byte buf[]) {
         this.buf = buf;
-        this.pos = 0;
-        this.count = buf.length;
+        this.pos = 0;               // pos      应该就是当前读取的光标
+        this.count = buf.length;    // count    “能够读取”的长度，对于读取 byte[] 片段这个 count <= buf.length
     }
 
     /**
@@ -122,9 +122,9 @@ class ByteArrayInputStream extends InputStream {
      */
     public ByteArrayInputStream(byte buf[], int offset, int length) {
         this.buf = buf;
-        this.pos = offset;
-        this.count = Math.min(offset + length, buf.length);
-        this.mark = offset;
+        this.pos = offset;                                      // pos: 当前读取的光标必须从 offset 开始
+        this.count = Math.min(offset + length, buf.length);     // count: 能够读取的大小，也必须从 offset 开始计算
+        this.mark = offset;                                     // mark: 默认是 0，此刻标记到 offset ===> 似乎可以理解 mark 充当一个 start 开始标记
     }
 
     /**
@@ -141,6 +141,7 @@ class ByteArrayInputStream extends InputStream {
      *          stream has been reached.
      */
     public synchronized int read() {
+        // 读取的时候，用不到 mark
         return (pos < count) ? (buf[pos++] & 0xff) : -1;
     }
 
@@ -240,6 +241,7 @@ class ByteArrayInputStream extends InputStream {
      * @since   JDK1.1
      */
     public boolean markSupported() {
+        // ByteArrayInputStream 支持“回头”，或者理解为打标记，游戏存档
         return true;
     }
 
@@ -254,11 +256,12 @@ class ByteArrayInputStream extends InputStream {
      * supplied).
      *
      * <p> Note: The <code>readAheadLimit</code> for this class
-     *  has no meaning.
+     *  has no meaning. 这个参数在这里没意义哈～
      *
      * @since   JDK1.1
      */
     public void mark(int readAheadLimit) {
+        // 游戏存档，一般在读取前直接存档，此时 pos = 0
         mark = pos;
     }
 
@@ -268,6 +271,7 @@ class ByteArrayInputStream extends InputStream {
      * in the constructor.
      */
     public synchronized void reset() {
+        // 读取存档，回到存档点
         pos = mark;
     }
 

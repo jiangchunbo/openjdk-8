@@ -91,6 +91,7 @@ public class ProtectionDomain {
     }
 
     /* CodeSource */
+    // 代码来源?
     private CodeSource codesource ;
 
     /* ClassLoader the protection domain was consed from */

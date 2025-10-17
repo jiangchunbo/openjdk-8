@@ -68,6 +68,7 @@ public class Launcher {
 
     public Launcher() {
         // Create the extension class loader
+        // 创建扩展类加载器，稍候我们会将扩展类加载起作为 AppClassLoader 的父加载器
         ClassLoader extcl;
         try {
             extcl = ExtClassLoader.getExtClassLoader();
@@ -77,6 +78,7 @@ public class Launcher {
         }
 
         // Now create the class loader to use to launch the application
+        // 创建 AppClassLoader 并设置其父加载器是 ext class loader
         try {
             loader = AppClassLoader.getAppClassLoader(extcl);
         } catch (IOException e) {
@@ -85,7 +87,10 @@ public class Launcher {
         }
 
         // Also set the context class loader for the primordial thread.
+        // 设置线程类加载器
         Thread.currentThread().setContextClassLoader(loader);
+
+        // Thread.currentThread().getContextClassLoader(); --> 后续可以通过这种方式获取用户代码的类加载器
 
         // Finally, install a security manager if requested
         String s = System.getProperty("java.security.manager");

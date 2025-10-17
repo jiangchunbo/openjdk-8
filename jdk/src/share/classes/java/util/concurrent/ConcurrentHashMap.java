@@ -682,6 +682,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * never be used in index calculations because of table bounds.
      */
     static final int spread(int h) {
+        // 扩展、分散，提高散列函数的均匀性
         return (h ^ (h >>> 16)) & HASH_BITS;
     }
 
@@ -1008,11 +1009,18 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
     /** Implementation for put and putIfAbsent */
     final V putVal(K key, V value, boolean onlyIfAbsent) {
+        // key 和 value 一定不能是 null，基于某种考量
         if (key == null || value == null) throw new NullPointerException();
+
+        // 扰动计算 hash
         int hash = spread(key.hashCode());
+
         int binCount = 0;
-        for (Node<K,V>[] tab = table;;) {
+        Node<K,V>[] tab = table;
+        for (;;) {
             Node<K,V> f; int n, i, fh;
+
+            // 如果没有初始化 table，那么初始化
             if (tab == null || (n = tab.length) == 0)
                 tab = initTable();
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
