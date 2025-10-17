@@ -68,9 +68,16 @@ import sun.security.util.SecurityConstants;
  * typical strategy is to transform the name into a file name and then read a
  * "class file" of that name from a file system.
  *
+ * ClassLoader 是一个负责加载类的对象，而该类是一个抽象类。
+ *
+ * 给定一个 binary name 后，类加载器应尝试定位或生成定义该类的数据。
+ * 一个典型的策略是将类奴婢该转换为文件名，然后从文件系统中读取与其名称对应的 class file
+ *
  * <p> Every {@link Class <tt>Class</tt>} object contains a {@link
  * Class#getClassLoader() reference} to the <tt>ClassLoader</tt> that defined
  * it.
+ *
+ * 每个 Class 对象都包含对定义它的 ClassLoader 的引用，通过 getClassLoader 方法获取
  *
  * <p> <tt>Class</tt> objects for array classes are not created by class
  * loaders, but are created automatically as required by the Java runtime.
@@ -79,9 +86,14 @@ import sun.security.util.SecurityConstants;
  * type; if the element type is a primitive type, then the array class has no
  * class loader.
  *
+ * 数组类的 Class 对象不会由类加载器创建，而是由 Java 运行时在需要时自动创建。数组类的类加载器与其元素类型的类加载器相同。
+ * 如果数组的元素类型是基本类型（如 int、float），则数组类没有类加载器。
+ *
  * <p> Applications implement subclasses of <tt>ClassLoader</tt> in order to
  * extend the manner in which the Java virtual machine dynamically loads
  * classes.
+ *
+ * 应用程序可以通过实现 ClassLoader 的子类以扩展 Java 虚拟机动态加载类的方式
  *
  * <p> Class loaders may typically be used by security managers to indicate
  * security domains.
@@ -108,6 +120,10 @@ import sun.security.util.SecurityConstants;
  * loading can lead to deadlocks because the loader lock is held for the
  * duration of the class loading process (see {@link #loadClass
  * <tt>loadClass</tt>} methods).
+ *
+ * 并行加载能力
+ *
+ * 支持并行加载类的类加载器称为“并行能力类加载器”
  *
  * <p> Normally, the Java virtual machine loads classes from the local file
  * system in a platform-dependent manner.  For example, on UNIX systems, the
@@ -345,6 +361,10 @@ public abstract class ClassLoader {
      * to invoking {@link #loadClass(String, boolean) <tt>loadClass(name,
      * false)</tt>}.
      *
+     * 加载 class，使用 binary name 也就是完全限定名。
+     *
+     * 这种机制会由 JVM 调用来解析类引用
+     *
      * @param  name
      *         The <a href="#name">binary name</a> of the class
      *
@@ -401,10 +421,15 @@ public abstract class ClassLoader {
     protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
     {
+        // 这个锁可能粒度大，或者粒度小，看并行情况
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
+            // 首先，检查这个类是否已经被加载过了
+            // 而且，我们可以知道，只需要通过一个 ClassLoader + name 就能判断该类是否加载过
             Class<?> c = findLoadedClass(name);
             if (c == null) {
+                // 下面进行加载
+
                 long t0 = System.nanoTime();
                 try {
                     if (parent != null) {
@@ -417,6 +442,7 @@ public abstract class ClassLoader {
                     // from the non-null parent class loader
                 }
 
+                // 如果双亲委派没有找到，则自己寻找
                 if (c == null) {
                     // If still not found, then invoke findClass in order
                     // to find the class.
@@ -457,9 +483,14 @@ public abstract class ClassLoader {
      * @since  1.7
      */
     protected Object getClassLoadingLock(String className) {
+        // 如果锁的粒度很粗，className 其实是没有用的
+
+        // 这个要看 ClassLoader 是否要并行加载
         Object lock = this;
         if (parallelLockMap != null) {
             Object newLock = new Object();
+
+            // 如果返回值是 null，表示 put 成功，竞争成功，此时赋予自己的 newLock
             lock = parallelLockMap.putIfAbsent(className, newLock);
             if (lock == null) {
                 lock = newLock;
@@ -863,8 +894,12 @@ public abstract class ClassLoader {
 
     // true if the name is null or has the potential to be a valid binary name
     private boolean checkName(String name) {
+        // name 是空，或者是空字符串，竟然也是一个合格的名字
         if ((name == null) || (name.length() == 0))
             return true;
+
+        // 不允许出现 '/'
+        // 不允许出现 '['  （如果虚拟机不允许）
         if ((name.indexOf('/') != -1)
             || (!VM.allowArraySyntax() && (name.charAt(0) == '[')))
             return false;
@@ -1030,8 +1065,11 @@ public abstract class ClassLoader {
      * @since  1.1
      */
     protected final Class<?> findLoadedClass(String name) {
+        // 如果 check 名字不成功，就返回 null
         if (!checkName(name))
             return null;
+
+        // 通过 native 方法寻找
         return findLoadedClass0(name);
     }
 
@@ -1452,6 +1490,7 @@ public abstract class ClassLoader {
             sun.misc.Launcher l = sun.misc.Launcher.getLauncher();
             if (l != null) {
                 Throwable oops = null;
+                //
                 scl = l.getClassLoader();
                 try {
                     scl = AccessController.doPrivileged(
@@ -1532,6 +1571,7 @@ public abstract class ClassLoader {
 
     // Set to true once the system class loader has been set
     // @GuardedBy("ClassLoader.class")
+    // sclSet 的缩写是 system class loader set，表示系统类加载器是否设置
     private static boolean sclSet;
 
 
@@ -2196,6 +2236,7 @@ class SystemClassLoaderAction
     }
 
     public ClassLoader run() throws Exception {
+        // 如果 java.system.class.loader 属性是 null，就使用传入进来的 class laoder
         String cls = System.getProperty("java.system.class.loader");
         if (cls == null) {
             return parent;

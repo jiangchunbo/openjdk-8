@@ -141,6 +141,9 @@ inline intptr_t Atomic::xchg_ptr(intptr_t exchange_value, volatile intptr_t* des
   return exchange_value;
 }
 
+// 返回值是 dest 指向位置的原始值
+// 通过检查返回值是否等于 compare_value，可以知道 CAS 操作是否成功执行
+// 因为如果返回值 == compare_value，就表示一定会交换成功
 inline jlong    Atomic::cmpxchg    (jlong    exchange_value, volatile jlong*    dest, jlong    compare_value) {
   bool mp = os::is_MP();
   __asm__ __volatile__ (LOCK_IF_MP(%4) "cmpxchgq %1,(%3)"
