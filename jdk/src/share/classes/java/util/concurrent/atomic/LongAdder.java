@@ -34,6 +34,7 @@
  */
 
 package java.util.concurrent.atomic;
+
 import java.io.Serializable;
 
 /**
@@ -64,10 +65,11 @@ import java.io.Serializable;
  * compareTo} because instances are expected to be mutated, and so are
  * not useful as collection keys.
  *
- * @since 1.8
  * @author Doug Lea
+ * @since 1.8
  */
 public class LongAdder extends Striped64 implements Serializable {
+
     private static final long serialVersionUID = 7249069246863182397L;
 
     /**
@@ -82,12 +84,25 @@ public class LongAdder extends Striped64 implements Serializable {
      * @param x the value to add
      */
     public void add(long x) {
-        Cell[] as; long b, v; int m; Cell a;
+        Cell[] as;
+        long b, v;
+        int m;
+        Cell a;
+
+        // 尝试 CAS [从 base -> base + x]，如果失败，则进入
         if ((as = cells) != null || !casBase(b = base, b + x)) {
             boolean uncontended = true;
-            if (as == null || (m = as.length - 1) < 0 ||
-                (a = as[getProbe() & m]) == null ||
-                !(uncontended = a.cas(v = a.value, v + x)))
+
+            if (as == null ||
+                    // as.length - 1 < 0 不就是长度等于 0 么，其实这么写也只是为了下面进行 & 操作
+                    (m = as.length - 1) < 0 ||
+                    // as 有大小，但是 当前 Thread 对应的 probe 桶是空的
+                    (a = as[getProbe() & m]) == null ||
+                    // 或者 桶 有东西，但是 CAS 桶内失败
+                    !(uncontended = a.cas(v = a.value, v + x)))
+
+                // uncontended == true 表示前面就失败了，要不就是 as 还没有初始化，要不就是桶还没有初始化
+                // uncontended == false 表示桶准备好了，但是没有竞争成功
                 longAccumulate(x, null, uncontended);
         }
     }
@@ -116,8 +131,11 @@ public class LongAdder extends Striped64 implements Serializable {
      * @return the sum
      */
     public long sum() {
-        Cell[] as = cells; Cell a;
+        Cell[] as = cells;
+        Cell a;
         long sum = base;
+
+        // 遍历所有的 cell，把它们加起来
         if (as != null) {
             for (int i = 0; i < as.length; ++i) {
                 if ((a = as[i]) != null)
@@ -135,7 +153,8 @@ public class LongAdder extends Striped64 implements Serializable {
      * known that no threads are concurrently updating.
      */
     public void reset() {
-        Cell[] as = cells; Cell a;
+        Cell[] as = cells;
+        Cell a;
         base = 0L;
         if (as != null) {
             for (int i = 0; i < as.length; ++i) {
@@ -156,7 +175,8 @@ public class LongAdder extends Striped64 implements Serializable {
      * @return the sum
      */
     public long sumThenReset() {
-        Cell[] as = cells; Cell a;
+        Cell[] as = cells;
+        Cell a;
         long sum = base;
         base = 0L;
         if (as != null) {
@@ -172,6 +192,7 @@ public class LongAdder extends Striped64 implements Serializable {
 
     /**
      * Returns the String representation of the {@link #sum}.
+     *
      * @return the String representation of the {@link #sum}
      */
     public String toString() {
@@ -192,7 +213,7 @@ public class LongAdder extends Striped64 implements Serializable {
      * primitive conversion.
      */
     public int intValue() {
-        return (int)sum();
+        return (int) sum();
     }
 
     /**
@@ -200,7 +221,7 @@ public class LongAdder extends Striped64 implements Serializable {
      * after a widening primitive conversion.
      */
     public float floatValue() {
-        return (float)sum();
+        return (float) sum();
     }
 
     /**
@@ -208,19 +229,22 @@ public class LongAdder extends Striped64 implements Serializable {
      * primitive conversion.
      */
     public double doubleValue() {
-        return (double)sum();
+        return (double) sum();
     }
 
     /**
      * Serialization proxy, used to avoid reference to the non-public
      * Striped64 superclass in serialized forms.
+     *
      * @serial include
      */
     private static class SerializationProxy implements Serializable {
+
         private static final long serialVersionUID = 7249069246863182397L;
 
         /**
          * The current value returned by sum().
+         *
          * @serial
          */
         private final long value;
@@ -241,6 +265,7 @@ public class LongAdder extends Striped64 implements Serializable {
             a.base = value;
             return a;
         }
+
     }
 
     /**
@@ -261,7 +286,7 @@ public class LongAdder extends Striped64 implements Serializable {
      * @throws java.io.InvalidObjectException always
      */
     private void readObject(java.io.ObjectInputStream s)
-        throws java.io.InvalidObjectException {
+            throws java.io.InvalidObjectException {
         throw new java.io.InvalidObjectException("Proxy required");
     }
 

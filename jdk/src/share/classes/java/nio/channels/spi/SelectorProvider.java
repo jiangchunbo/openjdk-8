@@ -168,10 +168,15 @@ public abstract class SelectorProvider {
             return AccessController.doPrivileged(
                 new PrivilegedAction<SelectorProvider>() {
                     public SelectorProvider run() {
+                            // 从属性中获取 provider (基本不可能)
                             if (loadProviderFromProperty())
                                 return provider;
+
+                            // 从 SPI 获取 provider (基本不可能)
                             if (loadProviderAsService())
                                 return provider;
+
+                            // 创建一个默认的
                             provider = sun.nio.ch.DefaultSelectorProvider.create();
                             return provider;
                         }

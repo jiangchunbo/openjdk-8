@@ -289,8 +289,12 @@ public abstract class AbstractSelectableChannel
                 throw new ClosedChannelException();
             if (blocking == block)
                 return this;
+
+            // 如果现在有 key，就不能设置 block
             if (block && haveValidKeys())
                 throw new IllegalBlockingModeException();
+
+            //
             implConfigureBlocking(block);
             blocking = block;
         }
