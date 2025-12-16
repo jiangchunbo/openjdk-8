@@ -152,6 +152,8 @@ public class SignatureParser {
      */
     public ClassSignature parseClassSig(String s) {
         if (DEBUG) System.out.println("Parsing class sig:" + s);
+
+        // 将类的签名转换为字符数组
         input = s.toCharArray();
         return parseClassSignature();
     }

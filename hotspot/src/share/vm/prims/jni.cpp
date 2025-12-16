@@ -660,6 +660,9 @@ JNI_ENTRY(jclass, jni_GetSuperclass(JNIEnv *env, jclass sub))
   return obj;
 JNI_END
 
+// IsAssignableFrom
+// sub 子类
+// super 超类
 JNI_QUICK_ENTRY(jboolean, jni_IsAssignableFrom(JNIEnv *env, jclass sub, jclass super))
   JNIWrapper("IsSubclassOf");
 #ifndef USDT2
@@ -668,8 +671,13 @@ JNI_QUICK_ENTRY(jboolean, jni_IsAssignableFrom(JNIEnv *env, jclass sub, jclass s
   HOTSPOT_JNI_ISASSIGNABLEFROM_ENTRY(
                                      env, sub, super);
 #endif /* USDT2 */
+
+  // 获得 sub mirror
   oop sub_mirror   = JNIHandles::resolve_non_null(sub);
+  // 获得 super mirror
   oop super_mirror = JNIHandles::resolve_non_null(super);
+
+  // 1) 如果只要有其中一个是 primitive，那么必须另一个也是相同的 primitive，否则就是 false
   if (java_lang_Class::is_primitive(sub_mirror) ||
       java_lang_Class::is_primitive(super_mirror)) {
     jboolean ret = (sub_mirror == super_mirror);
@@ -681,9 +689,14 @@ JNI_QUICK_ENTRY(jboolean, jni_IsAssignableFrom(JNIEnv *env, jclass sub, jclass s
 #endif /* USDT2 */
     return ret;
   }
+
+  // 2) 获取双方的 Klass 对象
   Klass* sub_klass   = java_lang_Class::as_Klass(sub_mirror);
   Klass* super_klass = java_lang_Class::as_Klass(super_mirror);
+
   assert(sub_klass != NULL && super_klass != NULL, "invalid arguments to jni_IsAssignableFrom");
+
+  // 直接调用 Klass 对象的 is_subtype_of
   jboolean ret = sub_klass->is_subtype_of(super_klass) ?
                    JNI_TRUE : JNI_FALSE;
 #ifndef USDT2
