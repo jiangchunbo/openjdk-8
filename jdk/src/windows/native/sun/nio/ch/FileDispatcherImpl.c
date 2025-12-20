@@ -285,6 +285,8 @@ Java_sun_nio_ch_FileDispatcherImpl_pwrite0(JNIEnv *env, jclass clazz, jobject fd
 
     lowOffset = (DWORD)offset;
     highOffset = (DWORD)(offset >> 32);
+
+    // 把文件指针移动到 offset
     lowOffset = SetFilePointer(h, lowOffset, &highOffset, FILE_BEGIN);
     if (lowOffset == ((DWORD)-1)) {
         if (GetLastError() != ERROR_SUCCESS) {

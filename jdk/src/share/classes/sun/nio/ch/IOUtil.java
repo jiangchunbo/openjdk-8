@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 /**
  * File-descriptor based I/O utilities that are shared by NIO classes.
+ *
+ * 基于文件描述符 fd 的 IO 工具类，给 NIO 类共享使用。
  */
 
 public class IOUtil {
@@ -43,6 +45,15 @@ public class IOUtil {
 
     private IOUtil() { }                // No instantiation
 
+    /**
+     *
+     * @param fd 文件描述符
+     * @param src 字节缓存
+     * @param position 读取位置
+     * @param nd
+     * @return
+     * @throws IOException
+     */
     static int write(FileDescriptor fd, ByteBuffer src, long position,
                      NativeDispatcher nd)
         throws IOException
@@ -85,11 +96,15 @@ public class IOUtil {
         int written = 0;
         if (rem == 0)
             return 0;
+
+        // 最底层使用 NativeDispatcher 执行 write，就是 native 方法
+
         if (position != -1) {
             written = nd.pwrite(fd,
                                 ((DirectBuffer)bb).address() + pos,
                                 rem, position);
         } else {
+
             written = nd.write(fd, ((DirectBuffer)bb).address() + pos, rem);
         }
         if (written > 0)

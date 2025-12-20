@@ -74,6 +74,7 @@ public class FileChannelImpl
     }
 
     // Used by FileInputStream.getChannel() and RandomAccessFile.getChannel()
+    // FileInputStream.getChannel() FileChannelImpl.open(fd, true, false, this) 可读、不可写
     public static FileChannel open(FileDescriptor fd,
                                    boolean readable, boolean writable,
                                    Object parent)
@@ -82,6 +83,7 @@ public class FileChannelImpl
     }
 
     // Used by FileOutputStream.getChannel
+    // FileOutputStream.getChannel() FileChannelImpl.open(fd, false, true, append, this) 不可读、可写
     public static FileChannel open(FileDescriptor fd,
                                    boolean readable, boolean writable,
                                    boolean append, Object parent)
@@ -192,6 +194,7 @@ public class FileChannelImpl
                 if (!isOpen())
                     return 0;
                 do {
+                    // 通过 IOUtil 工具类写入
                     n = IOUtil.write(fd, src, -1, nd);
                 } while ((n == IOStatus.INTERRUPTED) && isOpen());
                 return IOStatus.normalize(n);

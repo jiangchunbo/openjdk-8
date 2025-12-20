@@ -1274,6 +1274,7 @@ struct JNIEnv_ {
         functions->CallNonvirtualVoidMethodA(this,obj,clazz,methodID,args);
     }
 
+    // 返回 Java 字段标识符
     jfieldID GetFieldID(jclass clazz, const char *name,
                         const char *sig) {
         return functions->GetFieldID(this,clazz,name,sig);
